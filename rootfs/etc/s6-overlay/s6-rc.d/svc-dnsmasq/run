@@ -1,0 +1,7 @@
+#!/command/execlineb -P
+
+with-contenv
+s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z localhost 53" \
+    dnsmasq \
+        --keep-in-foreground \
+        --log-facility=-

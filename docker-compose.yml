@@ -1,0 +1,26 @@
+version: "3"
+networks:
+  tailscale-net:
+    name: tailscale-net
+services:
+  tailscale:
+    privileged: true
+    hostname: tailscale
+    container_name: tailscale
+    image: docker.io/tailscale/tailscale:latest
+    networks:
+      - tailscale-net
+    volumes:
+      - "/opt/config/system/tailscale:/var/lib/tailscale"
+    environment:
+      TS_AUTHKEY: "<put here>"
+      TS_ACCEPT_DNS: "false"
+      TS_USERSPACE: "true"
+    restart: unless-stopped
+  tailscale-dns:
+    image: ghcr.io/stumpylog/tailscale-dns-container:main
+    network_mode: "service:tailscale"
+    container_name: tailscale-dns
+    restart: unless-stopped
+    volumes:
+      - "./config/:/etc/dnsmasq.d/:ro"

@@ -1,0 +1,4 @@
+#!/command/execlineb -P
+
+foreground { dnsmasq --version }
+dnsmasq --test

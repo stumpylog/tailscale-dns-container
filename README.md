@@ -1,7 +1,8 @@
 # Tailscale DNS Container
 
-This is a dead simple container designed to solve a problem likely unique to
-my own network and configuration.
+This is a dead simple container designed containing dnsmasq from
+Alpine Linux, designed to run connected to your Tailnet and
+provide more control over DNS requests.
 
 ## The Problem
 
@@ -12,14 +13,11 @@ providing the DDNS updated DNS record information.  So the devices connect direc
 to the server when inside my network using a 192.168.1.xxx address.  This
 works great when connected locally.
 
-Now, I'm working on getting Tailscale setup and configured for my devices, so
-there will not be open ports and no need for the DDNS updater any longer.
-Tailscale allows for DNS control, including using a node as a DNS server.
-Great!  But it doesn't work quite how I want, as my existing DNS server will
-return the server IP address in the 192.168.1.xxx for my own domain.
-
-To use my existing DNS server, I would also need to advertise subnet routes
-to allow access to the server, since the DNS rewrite returns an IP not in the Tailnet.
+I wanted roughly the same thing to happen when a device is connected via
+[Tailscale](https://tailscale.com/). When a device is on the my tailnet, it
+receives the server IP address for my domain as being the server's tailnet IP
+address.  For requests not for my own domain, they are passed upstream to
+AdGuard (or any other DNS server).
 
 ## The Solution
 
@@ -31,10 +29,31 @@ The end result?  A client connected locally will see the local server IP address
 A client connected via Tailscale sees the Tailscale IP address of the server.  No
 subnet routing required.
 
+## Configuration
+
+See the example [docker-compose.yml](./docker-compose.yml) for a full example
+of setting the container up, alongside a Tailscale image.
+
+Mount a dnsmasq configuration file into `/etc/dnsmasq.d/`.  Set your domain with its
+Tailnet IP as the return value.
+
+Set your preferred upstream DNS for all other requests.  This might be a public
+resolver like Cloudflare or Google, your own resolver or something else entirely.
+
+```
+# Add domains which you want to force to an IP address here.
+# Set tailnet IP(s) here
+address=/myawesomedomain.me/100.x.y.z
+
+# Add other name servers here, with domain specs if they are for
+# non-public domains.
+server=1.1.1.1
+```
+
 ## Technologies
 
 This image is built on:
 
-- [Alpine Linux](https://hub.docker.com/_/alpine/)
+- [Alpine Linux](https://www.alpinelinux.org/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
 - [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html)

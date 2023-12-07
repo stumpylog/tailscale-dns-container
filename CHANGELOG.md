@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changelog format is now "Keep a Changelog" style
+- s6-overlay 3.1.6.2
 
 ## [v0.2.0] - 2023-05-25
 

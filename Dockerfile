@@ -18,7 +18,7 @@ ENV \
 ARG TARGETARCH
 ARG TARGETVARIANT
 # Lock this version
-ARG S6_OVERLAY_VERSION=3.1.5.0
+ARG S6_OVERLAY_VERSION=3.1.6.2
 
 RUN set -eux \
     && echo "Installing build time packages" \

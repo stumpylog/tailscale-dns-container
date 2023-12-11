@@ -9,15 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Changelog format is now "Keep a Changelog" style
 - s6-overlay 3.1.6.2
+- Alpine 3.19
 
-## [v0.2.0] - 2023-05-25
+## [0.2.2] - 2023-11-01
+
+### Changed
+
+- Changelog format is now "Keep a Changelog" style
+- Updated action versions
+
+## [0.2.0] - 2023-05-25
 
 - Alpine 3.18
 - s6-overlay 3.1.5.0
 
-## v0.1.0
+## [0.1.0]
 
 - Initial image release
 - Alpine 3.17

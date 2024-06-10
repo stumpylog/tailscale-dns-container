@@ -5,9 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0] - 2024-06-10
 
-- Alpine 3.20
+### Changed
+
+- Base image updated to Alpine 3.20
+- s6-overlay updated to v3.2.0.0
+
+### Added
+
+- Github release with changelog for releases
+
+### Fixed
+
+- dependabot was target the wrong branch for updates
 
 ## [0.3.0]
 

@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Build & Release
 
 on:
   push:
@@ -11,14 +11,15 @@ on:
       - "main"
       - "develop"
 
-permissions:
-  contents: read
-  packages: write
+
 
 jobs:
   build-image:
     name: Buld Docker Image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       -
         name: Checkout
@@ -60,3 +61,31 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
+  create-release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    needs:
+      - build-image
+    steps:
+      -
+        uses: actions/checkout@v4
+      -
+        name: Get latest release info
+        id: query-release-info
+        uses: release-flow/keep-a-changelog-action@v3
+        with:
+          command: query
+          version: ${{ github.ref_name }}
+      -
+        name: Display release info
+        run: |
+          echo "Version: ${{ steps.query-release-info.outputs.version }}"
+          echo "Date: ${{ steps.query-release-info.outputs.release-date }}"
+          echo "${{ steps.query-release-info.outputs.release-notes }}"
+      -
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.query-release-info.outputs.release-notes }}

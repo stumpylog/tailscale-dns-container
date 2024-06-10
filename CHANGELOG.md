@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base image updated to Alpine 3.20
 - s6-overlay updated to v3.2.0.0
 
+### Added
+
+- Github release with changelog for releases
+
 ### Fixed
 
 - dependabot was target the wrong branch for updates

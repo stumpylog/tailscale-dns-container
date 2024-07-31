@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- dependabot was target the wrong branch for updates
+- dependabot was targeting the wrong branch for updates
 
 ## [0.3.0]
 

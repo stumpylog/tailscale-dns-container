@@ -2,7 +2,7 @@
 # Purpose: Installs s6-overlay and rootfs
 # Comments:
 #  - Don't leave anything extra in here either
-FROM docker.io/alpine:3.20 as s6-overlay-base
+FROM docker.io/alpine:3.20 AS s6-overlay-base
 
 WORKDIR /usr/src/s6
 
@@ -58,7 +58,7 @@ COPY ./rootfs /
 # Purpose: The final image
 # Comments:
 #  - Don't leave anything extra in here
-FROM s6-overlay-base as main-app
+FROM s6-overlay-base AS main-app
 
 RUN set -eux \
     && echo "Installing dnsmasq" \

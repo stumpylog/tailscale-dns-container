@@ -1,6 +1,6 @@
 # Tailscale DNS Container
 
-This is a dead simple container designed containing dnsmasq from
+This is a dead simple container containing dnsmasq from
 Alpine Linux, designed to run connected to your Tailnet and
 provide more control over DNS requests.
 

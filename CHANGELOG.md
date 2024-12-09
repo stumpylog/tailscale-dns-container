@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Base image updated to Alpine 3.21 [#11](https://github.com/stumpylog/tailscale-dns-container/pull/11)
+- Small documentation updates [#12](https://github.com/stumpylog/tailscale-dns-container/pull/12)
 
 ## [0.5.0] - 2024-10-11
 

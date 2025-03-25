@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Base image updated to Alpine 3.21.3 [#14](https://github.com/stumpylog/tailscale-dns-container/pull/14)
+
 ### Added
 
 - Added sponsor button [#13](https://github.com/stumpylog/tailscale-dns-container/pull/13)

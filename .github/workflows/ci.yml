@@ -23,10 +23,10 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2@11bd71901bbe5b1630ceea73d27597364c9af683
       -
         name: Login to Github Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3.4.0@74a5d142397b4f367a81961eba4e8cd7edddf772
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -34,7 +34,7 @@ jobs:
       -
         name: Gather Docker metadata
         id: docker-meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v5.7.0@902fa8ec7d6ecbf8d84d538b9b233a880e428804
         with:
           images: |
             ghcr.io/${{ github.repository }}
@@ -47,13 +47,13 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.10.0@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.6.0@29109295f81e9208d7d86ff1c6c12d2833863392
       -
         name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.15.0@471d1dc4e07e5cdedd4c2171150001c434f0b7a4
         with:
           context: .
           file: ./Dockerfile
@@ -71,11 +71,11 @@ jobs:
       - build-image
     steps:
       -
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2@11bd71901bbe5b1630ceea73d27597364c9af683
       -
         name: Get latest release info
         id: query-release-info
-        uses: release-flow/keep-a-changelog-action@v3
+        uses: release-flow/keep-a-changelog-action@v3.0.0@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32
         with:
           command: query
           version: ${{ github.ref_name }}
@@ -86,6 +86,6 @@ jobs:
           echo "Date: ${{ steps.query-release-info.outputs.release-date }}"
           echo "${{ steps.query-release-info.outputs.release-notes }}"
       -
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.16.0@@440c8c1cb0ed28b9f43e4d1d670870f059653174
         with:
           body: ${{ steps.query-release-info.outputs.release-notes }}

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-03-25
+
+### Changed
+
+- Base image updated to Alpine 3.21.3 [#14](https://github.com/stumpylog/tailscale-dns-container/pull/14)
+
+### Added
+
+- Added sponsor button [#13](https://github.com/stumpylog/tailscale-dns-container/pull/13)
+
 ## [0.6.0] - 2024-12-09
 
 ### Changed

@@ -60,7 +60,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          push: true
+          push: ${{ github.ref_name == 'main' || github.ref_name == 'develop' || startsWith(github.ref, 'refs/tags/') }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
   create-release:

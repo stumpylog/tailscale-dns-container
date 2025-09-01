@@ -23,7 +23,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to Github Container Registry
         uses: docker/login-action@v3
@@ -71,7 +71,7 @@ jobs:
       - build-image
     steps:
       -
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Get latest release info
         id: query-release-info

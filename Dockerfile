@@ -2,7 +2,7 @@
 # Purpose: Installs s6-overlay and rootfs
 # Comments:
 #  - Don't leave anything extra in here either
-FROM docker.io/alpine:3.22.2 AS s6-overlay-base
+FROM docker.io/alpine:3.23.0 AS s6-overlay-base
 
 WORKDIR /usr/src/s6
 

@@ -1,18 +1,14 @@
 name: Build & Release
-
 on:
   push:
     tags:
       # https://semver.org/#spec-item-2
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
       # https://semver.org/#spec-item-9
-      - 'v[0-9]+.[0-9]+.[0-9]+-beta.rc[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+-beta.rc[0-9]+"
     branches:
       - "main"
       - "develop"
-
-
-
 jobs:
   build-image:
     name: Buld Docker Image
@@ -20,19 +16,17 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v6
-      -
-        name: Login to Github Container Registry
+      - name: Login to Github Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Gather Docker metadata
+      - name: Gather Docker metadata
         id: docker-meta
         uses: docker/metadata-action@v5
         with:
@@ -45,22 +39,31 @@ jobs:
             # For a tag x.y.z or vX.Y.Z, output an x.y.z and x.y image tag
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          push: true
+          push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
+          load: ${{ github.ref_type != 'tag' }}
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ fromJSON(steps.docker-meta.outputs.json).tags[0] }}
+          format: "sarif"
+          output: "trivy-results.sarif"
+          exit-code: "0"
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-results.sarif"
   create-release:
     name: Release
     runs-on: ubuntu-latest
@@ -70,22 +73,18 @@ jobs:
     needs:
       - build-image
     steps:
-      -
-        uses: actions/checkout@v6
-      -
-        name: Get latest release info
+      - uses: actions/checkout@v6
+      - name: Get latest release info
         id: query-release-info
         uses: release-flow/keep-a-changelog-action@v3
         with:
           command: query
           version: ${{ github.ref_name }}
-      -
-        name: Display release info
+      - name: Display release info
         run: |
           echo "Version: ${{ steps.query-release-info.outputs.version }}"
           echo "Date: ${{ steps.query-release-info.outputs.release-date }}"
           echo "${{ steps.query-release-info.outputs.release-notes }}"
-      -
-        uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1
         with:
           body: ${{ steps.query-release-info.outputs.release-notes }}

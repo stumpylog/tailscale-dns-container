@@ -10,53 +10,103 @@ on:
       - "main"
       - "develop"
 jobs:
-  build-image:
-    name: Buld Docker Image
-    runs-on: ubuntu-latest
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
-      packages: write
-      security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
-      - name: Login to Github Container Registry
-        uses: docker/login-action@v3
+        uses: actions/checkout@v6.0.1
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.3.0
+        with:
+          dockerfile: Dockerfile
+      - name: Validate the changelog
+        uses: release-flow/keep-a-changelog-action@v3
+        with:
+          command: query
+          version: latest-or-unreleased
+  build-docker-image:
+    name: Build Docker image for ${{ github.ref_name }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      packages: write
+      security-events: write
+    needs:
+      - lint
+    steps:
+      - name: Set ghcr repository name
+        id: set-ghcr-repository
+        run: |
+          ghcr_name=$(echo "${{ github.repository }}" | awk '{ print tolower($0) }')
+          echo "ghcr-repository=${ghcr_name}" >> $GITHUB_OUTPUT
+      - name: Gather Docker metadata
+        id: docker-meta
+        uses: docker/metadata-action@v5.10.0
+        with:
+          images: |
+            ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
+          tags: |
+            # Tag branches with branch name
+            type=ref,event=branch
+            # For a tag x.y.z or vX.Y.Z, output an x.y.z and x.y image tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.7.0
+        with:
+          platforms: all
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.11.1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3.6.0
+        if: github.ref_type == 'tag'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Gather Docker metadata
-        id: docker-meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ghcr.io/${{ github.repository }}
-          tags: |
-            # Tag branches with branch name
-            type=ref,event=branch
-            # Process semver tags
-            # For a tag x.y.z or vX.Y.Z, output an x.y.z and x.y image tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.ref_type == 'tag' }}
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}
+  scan-docker-image:
+    name: Scan Docker image for ${{ github.ref_name }}
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write
+    needs:
+      - lint
+    steps:
+      - name: Set ghcr repository name
+        id: set-ghcr-repository
+        run: |
+          ghcr_name=$(echo "${{ github.repository }}" | awk '{ print tolower($0) }')
+          echo "ghcr-repository=${ghcr_name}" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
+      - name: Build and push
+        uses: docker/build-push-action@v6.18.0
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          push: ${{ github.ref_type == 'tag' }}
-          tags: ${{ steps.docker-meta.outputs.tags }}
-          labels: ${{ steps.docker-meta.outputs.labels }}
-          load: ${{ github.ref_type != 'tag' }}
+          push: false
+          tags: ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
+          load: true
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.33.1
         with:
-          image-ref: ${{ fromJSON(steps.docker-meta.outputs.json).tags[0] }}
+          image-ref: ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
           format: "sarif"
           output: "trivy-results.sarif"
           exit-code: "0"
@@ -64,19 +114,21 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results.sarif"
-  create-release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+  release:
+    name: Build Docker image for ${{ github.ref_name }}
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     needs:
-      - build-image
+      - build-docker-image
+      - scan-docker-image
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6.0.1
       - name: Get latest release info
         id: query-release-info
-        uses: release-flow/keep-a-changelog-action@v3
+        uses: release-flow/keep-a-changelog-action@v3.0.0
         with:
           command: query
           version: ${{ github.ref_name }}
@@ -85,6 +137,6 @@ jobs:
           echo "Version: ${{ steps.query-release-info.outputs.version }}"
           echo "Date: ${{ steps.query-release-info.outputs.release-date }}"
           echo "${{ steps.query-release-info.outputs.release-notes }}"
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.20.0
         with:
           body: ${{ steps.query-release-info.outputs.release-notes }}

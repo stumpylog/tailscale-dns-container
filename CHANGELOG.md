@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image now builds for `linux/arm64` platform as well
 - Dockerfile linting via Hadolint
 - Validation of the CHANGELOG format
+- Updates s6-overlay to v3.2.2.0
 
 ## [0.10.0] - 2025-12-09
 

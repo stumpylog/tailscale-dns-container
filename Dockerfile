@@ -18,13 +18,13 @@ ENV \
 ARG TARGETARCH
 ARG TARGETVARIANT
 # Lock this version
-ARG S6_OVERLAY_VERSION=3.2.0.2
+ARG S6_OVERLAY_VERSION=3.2.2.0
 
 RUN set -eux \
     && echo "Installing build time packages" \
       && apk add --no-cache --virtual temp-pkgs \
         curl=8.17.0-r1 \
-        xz=5.8.1-r0 \
+        xz=5.8.2-r0 \
     && echo "Determining arch" \
       && S6_ARCH="" \
       && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then S6_ARCH="x86_64"; \

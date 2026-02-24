@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Lint Dockerfile
         uses: hadolint/hadolint-action@v3.3.0
         with:
@@ -56,7 +56,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.7.0
         with:
@@ -93,7 +93,7 @@ jobs:
           ghcr_name=$(echo "${{ github.repository }}" | awk '{ print tolower($0) }')
           echo "ghcr-repository=${ghcr_name}" >> $GITHUB_OUTPUT
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Build and push
         uses: docker/build-push-action@v6.18.0
         with:
@@ -125,7 +125,7 @@ jobs:
       - scan-docker-image
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Get latest release info
         id: query-release-info
         uses: release-flow/keep-a-changelog-action@v3.0.0

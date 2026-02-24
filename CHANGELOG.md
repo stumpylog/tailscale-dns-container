@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.0] - 2026-03-31
 
+### Changed
+
+- Dependabot GitHub Actions updates are now grouped into a single PR
+- Base image updated to Alpine 3.23.3
+
 ### Added
 
 - Image now builds for `linux/arm64` platform as well

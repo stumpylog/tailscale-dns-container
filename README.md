@@ -57,3 +57,8 @@ This image is built on:
 - [Alpine Linux](https://www.alpinelinux.org/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
 - [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html)
+
+## Supported Platforms
+
+- `linux/amd64`
+- `linux/arm64`

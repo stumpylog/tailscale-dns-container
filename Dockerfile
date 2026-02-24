@@ -65,6 +65,4 @@ RUN set -eux \
     && echo "Installing dnsmasq" \
         && apk add --no-cache dnsmasq=2.91-r1
 
-WORKDIR /opt/
-
 ENTRYPOINT [ "/init" ]

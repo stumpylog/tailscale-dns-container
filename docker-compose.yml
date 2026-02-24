@@ -1,4 +1,3 @@
-version: "3"
 networks:
   tailscale-net:
     name: tailscale-net
@@ -22,5 +21,10 @@ services:
     network_mode: "service:tailscale"
     container_name: tailscale-dns
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "53"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     volumes:
       - "./config/:/etc/dnsmasq.d/:ro"

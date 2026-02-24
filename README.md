@@ -14,7 +14,7 @@ to the server when inside my network using a 192.168.1.xxx address. This
 works great when connected locally.
 
 I wanted roughly the same thing to happen when a device is connected via
-[Tailscale](https://tailscale.com/). When a device is on the my tailnet, it
+[Tailscale](https://tailscale.com/). When a device is on my tailnet, it
 receives the server IP address for my domain as being the server's tailnet IP
 address. For requests not for my own domain, they are passed upstream to
 AdGuard (or any other DNS server).
@@ -29,18 +29,29 @@ The end result? A client connected locally will see the local server IP address.
 A client connected via Tailscale sees the Tailscale IP address of the server. No
 subnet routing required.
 
+## Image
+
+```bash
+ghcr.io/stumpylog/tailscale-dns-container:latest
+```
+
 ## Configuration
 
 See the example [docker-compose.yml](./docker-compose.yml) for a full example
 of setting the container up, alongside a Tailscale image.
 
-Mount a dnsmasq configuration file into `/etc/dnsmasq.d/`. Set your domain with its
-Tailnet IP as the return value.
+Mount a dnsmasq configuration file into `/etc/dnsmasq.d/`:
 
-Set your preferred upstream DNS for all other requests. This might be a public
-resolver like Cloudflare or Google, your own resolver or something else entirely.
-
+```yaml
+volumes:
+  - "./config/:/etc/dnsmasq.d/:ro"
 ```
+
+Set your domain with its Tailnet IP as the return value, and set your preferred
+upstream DNS for all other requests. This might be a public resolver like
+Cloudflare or Google, your own resolver, or something else entirely.
+
+```ini
 # Add domains which you want to force to an IP address here.
 # Set tailnet IP(s) here
 address=/myawesomedomain.me/100.x.y.z

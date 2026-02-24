@@ -6,18 +6,16 @@ provide more control over DNS requests.
 
 ## The Problem
 
-When my devices are on my home network, a DNS server is handed out to them via
-DHCP. Besides the ad-blocking, the server also rewrites requests for
-my own domain name to point to the local IP of the server hosting, rather than
-providing the DDNS updated DNS record information. So the devices connect directly
-to the server when inside my network using a 192.168.1.xxx address. This
-works great when connected locally.
+My home network runs a local DNS server for two purposes: ad-blocking, and
+rewriting my own domain name to its local IP address (`192.168.1.xxx`) rather
+than the external DDNS address. This means devices on my home network connect
+directly to local servers without going out to the internet and back.
 
-I wanted roughly the same thing to happen when a device is connected via
-[Tailscale](https://tailscale.com/). When a device is on my tailnet, it
-receives the server IP address for my domain as being the server's tailnet IP
-address. For requests not for my own domain, they are passed upstream to
-AdGuard (or any other DNS server).
+When a device connects via [Tailscale](https://tailscale.com/), it no longer
+uses the home DNS server, so it resolves my domain to the external DDNS address
+instead of the server's Tailnet IP. I wanted Tailscale-connected devices to get
+the Tailnet IP for my domain, keeping traffic on the Tailnet rather than routing
+it over the internet.
 
 ## The Solution
 

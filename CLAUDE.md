@@ -54,26 +54,29 @@ The container shares the Tailscale container's network interface via `network_mo
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Multi-stage build: downloads s6-overlay, installs dnsmasq |
-| `docker-compose.yml` | Example deployment with Tailscale sidecar |
-| `rootfs/etc/s6-overlay/s6-rc.d/init-dnsmasq/run` | Config validation script |
-| `rootfs/etc/s6-overlay/s6-rc.d/svc-dnsmasq/run` | Main dnsmasq service script |
-| `.github/workflows/ci.yml` | Build, scan, and release pipeline |
+| File                                             | Purpose                                                   |
+| ------------------------------------------------ | --------------------------------------------------------- |
+| `Dockerfile`                                     | Multi-stage build: downloads s6-overlay, installs dnsmasq |
+| `docker-compose.yml`                             | Example deployment with Tailscale sidecar                 |
+| `rootfs/etc/s6-overlay/s6-rc.d/init-dnsmasq/run` | Config validation script                                  |
+| `rootfs/etc/s6-overlay/s6-rc.d/svc-dnsmasq/run`  | Main dnsmasq service script                               |
+| `.github/workflows/ci.yml`                       | Build, scan, and release pipeline                         |
 
 ## Docker Build Process
 
 **Stage 1 (s6-overlay-base)**:
+
 1. Sets s6-overlay environment variables
 2. Downloads and validates s6-overlay tarballs (with SHA256 checksums)
 3. Extracts s6-overlay and copies rootfs configuration
 
 **Stage 2 (main-app)**:
+
 1. Installs dnsmasq with pinned version
 2. Sets `/init` as entrypoint (s6-overlay init)
 
 **Build command** (local):
+
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 -t tailscale-dns-container .
 ```
@@ -81,10 +84,12 @@ docker buildx build --platform linux/amd64,linux/arm64 -t tailscale-dns-containe
 ## s6-overlay Service Configuration
 
 **Init Service** (`init-dnsmasq`):
+
 - Type: `oneshot` (runs once at startup)
 - Validates dnsmasq configuration with `dnsmasq --test`
 
 **Main Service** (`svc-dnsmasq`):
+
 - Type: `longrun` (persistent)
 - Health check: `nc -z localhost 53` (port 53 connectivity)
 - Runs dnsmasq in foreground with stdout logging
@@ -94,19 +99,23 @@ docker buildx build --platform linux/amd64,linux/arm64 -t tailscale-dns-containe
 **Workflow**: `.github/workflows/ci.yml`
 
 **Triggers**:
+
 - Push to `main` or `develop` branches (build only)
 - Push semver tags `v*.*.*` (build + push + release)
 
 **Jobs**:
+
 1. **lint**: Hadolint (Dockerfile), changelog validation
 2. **build-docker-image**: Multi-arch build, push on tags only
 3. **scan-docker-image**: Trivy security scan, SARIF upload
 4. **release**: Create GitHub release with changelog notes
 
 **Tag Strategy**:
+
 - `v1.2.3` produces tags: `1.2.3`, `1.2`, `1`
 
 **Dependabot**:
+
 - Docker dependencies: weekly updates to `develop`
 - GitHub Actions: monthly updates to `develop`
 
@@ -124,14 +133,14 @@ docker buildx build --platform linux/amd64,linux/arm64 -t tailscale-dns-containe
 
 ## Code Quality Tools
 
-| Tool | Purpose |
-|------|---------|
-| Hadolint | Dockerfile linting |
-| ShellCheck | Shell script analysis |
-| Prettier | Code formatting |
-| yamlfmt | YAML formatting |
-| Trivy | Container security scanning |
-| pre-commit | Git hook framework |
+| Tool       | Purpose                     |
+| ---------- | --------------------------- |
+| Hadolint   | Dockerfile linting          |
+| ShellCheck | Shell script analysis       |
+| Prettier   | Code formatting             |
+| yamlfmt    | YAML formatting             |
+| Trivy      | Container security scanning |
+| pre-commit | Git hook framework          |
 
 ## Conventions
 
@@ -144,16 +153,17 @@ docker buildx build --platform linux/amd64,linux/arm64 -t tailscale-dns-containe
 
 ## Environment Variables (s6-overlay)
 
-| Variable | Value | Purpose |
-|----------|-------|---------|
-| `S6_BEHAVIOUR_IF_STAGE2_FAILS` | `2` | Continue on stage 2 failure |
-| `S6_CMD_WAIT_FOR_SERVICES_MAXTIME` | `0` | Unlimited wait for services |
-| `S6_CMD_WAIT_FOR_SERVICES` | `1` | Wait for services to be ready |
-| `S6_VERBOSITY` | `1` | Standard logging |
+| Variable                           | Value | Purpose                       |
+| ---------------------------------- | ----- | ----------------------------- |
+| `S6_BEHAVIOUR_IF_STAGE2_FAILS`     | `2`   | Continue on stage 2 failure   |
+| `S6_CMD_WAIT_FOR_SERVICES_MAXTIME` | `0`   | Unlimited wait for services   |
+| `S6_CMD_WAIT_FOR_SERVICES`         | `1`   | Wait for services to be ready |
+| `S6_VERBOSITY`                     | `1`   | Standard logging              |
 
 ## User Configuration
 
 Users mount dnsmasq configuration files to `/etc/dnsmasq.d/` (read-only):
+
 ```yaml
 volumes:
   - ./config/:/etc/dnsmasq.d/:ro
@@ -162,21 +172,25 @@ volumes:
 ## Common Tasks
 
 **Run locally**:
+
 ```bash
 docker compose up -d
 ```
 
 **View logs**:
+
 ```bash
 docker logs tailscale-dns
 ```
 
 **Test dnsmasq config**:
+
 ```bash
 docker exec tailscale-dns dnsmasq --test
 ```
 
 **Lint Dockerfile locally**:
+
 ```bash
 hadolint Dockerfile
 ```

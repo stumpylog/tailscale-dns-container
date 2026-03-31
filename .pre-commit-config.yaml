@@ -20,7 +20,7 @@ repos:
       - id: check-case-conflict
       - id: detect-private-key
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: "v3.7.4"
+    rev: "v3.8.1"
     hooks:
       - id: prettier
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -28,8 +28,16 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/google/yamlfmt
-    rev: v0.20.0
+    rev: v0.21.0
     hooks:
       - id: yamlfmt
         types:
           - yaml
+  - repo: https://github.com/woodruffw/zizmor-pre-commit
+    rev: v1.23.1
+    hooks:
+      - id: zizmor
+        args:
+          - "--no-progress"
+          - "--quiet"
+          - "--min-severity=low"

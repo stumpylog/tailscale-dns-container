@@ -17,13 +17,15 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.3.0
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
         with:
           dockerfile: Dockerfile
       - name: Validate the changelog
-        uses: release-flow/keep-a-changelog-action@v3
+        uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
         with:
           command: query
           version: latest-or-unreleased
@@ -44,7 +46,7 @@ jobs:
           echo "ghcr-repository=${ghcr_name}" >> $GITHUB_OUTPUT
       - name: Gather Docker metadata
         id: docker-meta
-        uses: docker/metadata-action@v5.10.0
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: |
             ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
@@ -56,22 +58,24 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.7.0
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
         with:
           platforms: all
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3.7.0
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         if: github.ref_type == 'tag'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: ./Dockerfile
@@ -93,9 +97,11 @@ jobs:
           ghcr_name=$(echo "${{ github.repository }}" | awk '{ print tolower($0) }')
           echo "ghcr-repository=${ghcr_name}" >> $GITHUB_OUTPUT
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Build and push
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: ./Dockerfile
@@ -104,14 +110,14 @@ jobs:
           tags: ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
           load: true
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
         with:
           image-ref: ghcr.io/${{ steps.set-ghcr-repository.outputs.ghcr-repository }}
           format: "sarif"
           output: "trivy-results.sarif"
           exit-code: "0"
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
         with:
           sarif_file: "trivy-results.sarif"
   release:
@@ -125,18 +131,30 @@ jobs:
       - scan-docker-image
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Get latest release info
         id: query-release-info
-        uses: release-flow/keep-a-changelog-action@v3.0.0
+        uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
         with:
           command: query
           version: ${{ github.ref_name }}
       - name: Display release info
+        env:
+          VERSION: ${{ steps.query-release-info.outputs.version }}
+          RELEASE_DATE: ${{ steps.query-release-info.outputs.release-date }}
+          RELEASE_NOTES: ${{ steps.query-release-info.outputs.release-notes }}
         run: |
-          echo "Version: ${{ steps.query-release-info.outputs.version }}"
-          echo "Date: ${{ steps.query-release-info.outputs.release-date }}"
-          echo "${{ steps.query-release-info.outputs.release-notes }}"
-      - uses: ncipollo/release-action@v1.20.0
-        with:
-          body: ${{ steps.query-release-info.outputs.release-notes }}
+          echo "Version: ${VERSION}"
+          echo "Date: ${RELEASE_DATE}"
+          echo "${RELEASE_NOTES}"
+      - name: Create GitHub release
+        env:
+          RELEASE_NOTES: ${{ steps.query-release-info.outputs.release-notes }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${RELEASE_TAG}" \
+            --title "${RELEASE_TAG}" \
+            --notes "${RELEASE_NOTES}"

@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validation of the CHANGELOG format
 - Updates s6-overlay to v3.2.2.0
 
+### Changed
+
+- Replaced `ncipollo/release-action` with native `gh release create`
+
+### Security
+
+- GitHub Actions workflow audited with [zizmor](https://docs.zizmor.sh/)
+- All GitHub Actions checkout steps now set `persist-credentials: false`
+- Template expressions in `run:` steps moved to environment variables to prevent injection
+- All GitHub Actions pinned to commit SHAs for supply chain security
+- Dependabot now groups GitHub Actions updates and applies a 7-day cooldown
+
 ## [0.10.0] - 2025-12-09
 
 ### Changed

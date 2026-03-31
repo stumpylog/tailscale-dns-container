@@ -5,8 +5,16 @@ updates:
     target-branch: develop
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "github-actions"
     directory: "/"
     target-branch: develop
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -23,8 +23,8 @@ ARG S6_OVERLAY_VERSION=3.2.2.0
 RUN set -eux \
     && echo "Installing build time packages" \
       && apk add --no-cache --virtual temp-pkgs \
-        curl=8.17.0-r1 \
-        xz=5.8.2-r0 \
+        curl=8.19.0-r0 \
+        xz=5.8.3-r0 \
     && echo "Determining arch" \
       && S6_ARCH="" \
       && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then S6_ARCH="x86_64"; \
@@ -63,7 +63,7 @@ FROM s6-overlay-base AS main-app
 
 RUN set -eux \
     && echo "Installing dnsmasq" \
-        && apk add --no-cache dnsmasq=2.91-r0
+        && apk add --no-cache dnsmasq=2.91-r1
 
 WORKDIR /opt/
 

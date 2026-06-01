@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-06-01
+
+### Changed
+
+- Base image updated to Alpine 3.23.4
+- `dnsmasq` updated to 2.91-r1
+- GitHub Actions updated: `docker/metadata-action` to 6.1.0, `docker/setup-buildx-action` to 4.1.0, `docker/login-action` to 4.2.0, `docker/build-push-action` to 7.2.0, `aquasecurity/trivy-action` to 0.36.0, `github/codeql-action` to 4.36.0
+
+### Added
+
+- Example `docker-compose.yml` now defines a container `healthcheck` for the DNS service
+- README documents supported platforms, image reference, and volume mount configuration
+
+### Removed
+
+- Obsolete `version` field removed from the example `docker-compose.yml`
+- Unused `WORKDIR` removed from the Dockerfile final stage
+- Inapplicable `check-toml` and `check-docstring-first` pre-commit hooks removed
+
 ## [0.12.0] - 2026-03-31
 
 ### Security

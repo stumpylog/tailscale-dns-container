@@ -23,7 +23,7 @@ ARG S6_OVERLAY_VERSION=3.2.2.0
 RUN set -eux \
     && echo "Installing build time packages" \
       && apk add --no-cache --virtual temp-pkgs \
-        curl=8.19.0-r0 \
+        curl=8.20.0-r1 \
         xz=5.8.3-r0 \
     && echo "Determining arch" \
       && S6_ARCH="" \
@@ -63,6 +63,6 @@ FROM s6-overlay-base AS main-app
 
 RUN set -eux \
     && echo "Installing dnsmasq" \
-        && apk add --no-cache dnsmasq=2.91-r1
+        && apk add --no-cache dnsmasq=2.92_p2-r0
 
 ENTRYPOINT [ "/init" ]

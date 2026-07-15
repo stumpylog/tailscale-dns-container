@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-07-15
+
+### Changed
+
+- Base image updated to Alpine 3.24.1
+- `dnsmasq` updated to 2.92_p2-r0
+- `curl` (build-time) updated to 8.21.0-r0
+- GitHub Actions updated: `actions/checkout` to v7.0.0, `docker/metadata-action` to 6.2.0, `docker/setup-qemu-action` to 4.2.0, `docker/setup-buildx-action` to 4.2.0, `docker/login-action` to 4.4.0, `docker/build-push-action` to 7.3.0, `github/codeql-action` to 4.37.0
+
 ## [0.13.0] - 2026-06-01
 
 ### Changed

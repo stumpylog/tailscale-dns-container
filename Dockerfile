@@ -2,7 +2,7 @@
 # Purpose: Installs s6-overlay and rootfs
 # Comments:
 #  - Don't leave anything extra in here either
-FROM docker.io/alpine:3.24.0 AS s6-overlay-base
+FROM docker.io/alpine:3.24.1 AS s6-overlay-base
 
 WORKDIR /usr/src/s6
 
@@ -23,7 +23,7 @@ ARG S6_OVERLAY_VERSION=3.2.2.0
 RUN set -eux \
     && echo "Installing build time packages" \
       && apk add --no-cache --virtual temp-pkgs \
-        curl=8.20.0-r1 \
+        curl=8.21.0-r0 \
         xz=5.8.3-r0 \
     && echo "Determining arch" \
       && S6_ARCH="" \

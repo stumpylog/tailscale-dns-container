@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-11-04
+
+### Changed
+
+- Base image updated to Alpine 3.24.3
+- Build-time `curl` and `xz` are no longer version pinned, as they are not part of the final image
+- GitHub Actions updated: `actions/checkout` to v7.0.1, `hadolint/hadolint-action` to v3.5.0, `docker/setup-qemu-action` to 4.4.0, `docker/setup-buildx-action` to 4.4.1, `docker/login-action` to 4.7.0, `docker/build-push-action` to 7.4.0, `github/codeql-action` to 4.39.1
+
 ## [0.14.0] - 2026-07-15
 
 ### Changed
